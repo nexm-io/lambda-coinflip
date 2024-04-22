@@ -60,7 +60,7 @@ export const initialInscriptions = [
       op: "call",
       contract: "pusd",
       function: "transfer",
-      args: ["House", 50000],
+      args: ["coinflip", 50000],
     } satisfies Inscription),
     sender: "walletB",
   },

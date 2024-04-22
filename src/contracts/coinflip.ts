@@ -23,7 +23,7 @@ export default class CoinFlip implements Contract {
     const [bet, seed] = argsParsing(schema, args, "flip");
 
     const pusdToken = new TokenHelper("pusd", ecosystem);
-    await pusdToken.transferFrom(player, "House", bet);
+    await pusdToken.transferFrom(player, "coinflip", bet);
 
     this.games.set(metadata.transactionHash, {
       player,
@@ -58,7 +58,7 @@ export default class CoinFlip implements Contract {
     const is_win = (host_seed | gameData.seed) % 2n === 0n;
     if (is_win) {
       const pusdToken = new TokenHelper("pusd", ecosystem);
-      await pusdToken.transferFrom(player, "House", gameData.bet * 2n);
+      await pusdToken.transfer(player, gameData.bet * 2n);
     }
 
     this.games.set(game, {
