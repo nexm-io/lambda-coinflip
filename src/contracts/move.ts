@@ -18,7 +18,6 @@ export default class Move implements Contract {
   // },
 
   async moveFrom({ args, ecosystem, metadata }: ContractParams) {
-    console.log("move", metadata);
     const schema = z.tuple([z.string(), z.string()]);
     const [from, contract] = argsParsing(schema, args, "moveFrom");
     const token = new TokenHelper(contract, ecosystem);

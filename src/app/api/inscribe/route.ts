@@ -6,7 +6,6 @@ import { randomInt } from "node:crypto";
 
 export async function POST(request: NextRequest) {
   const { inscription, block, sender } = await request.json();
-  console.log(inscription, block, sender);
   const ins = JSON.parse(inscription) as Inscription;
   const metadata = {
     sender: sender,

@@ -7,10 +7,9 @@ export class Query {
   async execute(
     contract: string,
     functionName: string,
-    args: Array<unknown>,
+    args: Array<unknown>
   ): Promise<unknown> {
     const file = persistenceStorage[contract];
-    console.log(contract, functionName, args);
     const params = {
       args: args,
       metadata: {

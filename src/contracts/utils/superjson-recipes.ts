@@ -10,11 +10,10 @@ export const registerSuperJSON = () => {
     {
       isApplicable: (v): v is ExtendedMap<any, any> => v instanceof ExtendedMap,
       serialize: (v) => {
-        console.log("map", v);
         return Array.from(v.entries());
       },
       deserialize: (v) => new ExtendedMap(v),
     },
-    "ExtendedMap",
+    "ExtendedMap"
   );
 };

@@ -19,7 +19,7 @@ export class LRC20Base implements Contract, LRC20 {
     protected _symbol: string,
     protected _decimals: number,
     protected _owner: string,
-    public activeOn: number,
+    public activeOn: number
   ) {}
 
   // *** MUTATIONS ***
@@ -35,7 +35,6 @@ export class LRC20Base implements Contract, LRC20 {
   }
 
   async transferFrom({ metadata, eventLogger, args }: ContractParams) {
-    console.log(args, metadata);
     const schema = z.tuple([z.string(), z.string(), zUtils.bigint()]);
     const [from, to, value] = argsParsing(schema, args, "transferFrom");
 
@@ -44,7 +43,7 @@ export class LRC20Base implements Contract, LRC20 {
     const allowance = fromAllowances.get(metadata.sender) ?? 0n;
     if (allowance < value) {
       throw new ExecutionError(
-        "transferFrom: allowance for spender not enough",
+        "transferFrom: allowance for spender not enough"
       );
     }
 
@@ -104,7 +103,7 @@ export class LRC20Base implements Contract, LRC20 {
   protected async mintLogic(
     args: unknown[],
     metadata: Metadata,
-    eventLogger: EventLogger,
+    eventLogger: EventLogger
   ) {
     const schema = z.tuple([zUtils.bigint()]);
     const [amount] = argsParsing(schema, args, "mint");
@@ -133,7 +132,7 @@ export class LRC20Base implements Contract, LRC20 {
     from: string,
     to: string,
     value: bigint,
-    eventLogger: EventLogger,
+    eventLogger: EventLogger
   ) {
     const currentBalanceFrom = this._balance.get(from) ?? 0n;
     if (value > currentBalanceFrom)
@@ -143,7 +142,7 @@ export class LRC20Base implements Contract, LRC20 {
     this._balance.update(
       to,
       0n,
-      (currentBalanceTo) => currentBalanceTo + value,
+      (currentBalanceTo) => currentBalanceTo + value
     );
 
     eventLogger.log({

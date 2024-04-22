@@ -42,7 +42,6 @@ export default function Home() {
   }) => {
     const args = JSON.parse(data.args);
     const result = await apiWrapper.query(data.contract, data.function, args);
-    console.log(result);
     setQueryResult(bigIntJson.stringify(result));
   };
 
@@ -96,11 +95,12 @@ export default function Home() {
           '{ "p": "lam", "op": "call", "contract": "pusd", "function": "mint", "args": [ 12000000 ] }',
           '{ "p": "lam", "op": "call", "contract": "pusd", "function": "approve", "args": [ "coinflip", 1200000 ] }',
           '{ "p": "lam", "op": "call", "contract": "pusd", "function": "transfer", "args": [ "House", 50000 ] }',
-          '{ "p": "lam", "op": "call", "contract": "coinflip", "function": "flip", "args": [ 10000, 50 ] }',
+          '{ "p": "lam", "op": "call", "contract": "coinflip", "function": "flip", "args": [ 10000 ] }',
           '{ "p": "lam", "op": "call", "contract": "coinflip", "function": "claim", "args": [ "12839", 60 ] }',
-        ].map((text) => (
+        ].map((text, index) => (
           <p
             className="cursor-pointer"
+            key={index}
             onClick={() => {
               toast.success("Copied");
               navigator.clipboard.writeText(text);

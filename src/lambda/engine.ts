@@ -10,8 +10,6 @@ import { logger } from "@/lambda/global";
 import { WrappedContract } from "@/contracts/utils/contract-wrapper";
 
 export async function engine(inscription: Inscription, metadata: Metadata) {
-  console.log("inscription", inscription);
-  console.log("metadata", metadata);
   if (inscription.op === "call") {
     const { contract: contractName, args, function: func } = inscription;
     const beforeCheckpoints = new Map<string, Contract>();
@@ -60,7 +58,6 @@ export async function engine(inscription: Inscription, metadata: Metadata) {
     try {
       // @ts-ignore
       await contract[func](params);
-      console.log("success");
       const log = {
         ...metadata,
         eventLogs: events,
@@ -72,7 +69,6 @@ export async function engine(inscription: Inscription, metadata: Metadata) {
       } satisfies TransactionLog;
 
       logger.addLog(log);
-      console.log(persistenceStorage);
     } catch (e: any) {
       console.error(e);
       // reset state
@@ -94,7 +90,7 @@ export async function engine(inscription: Inscription, metadata: Metadata) {
 
 const contractWrapper = <T extends Contract>(
   contract: T,
-  params: Omit<ContractParams, "args">,
+  params: Omit<ContractParams, "args">
 ): WrappedContract<T> => {
   return new Proxy(contract, {
     get(target: T, p: string | symbol): any {

@@ -6,6 +6,13 @@ export const apiWrapper = {
       method: "POST",
       body: JSON.stringify({ inscription, sender, block }),
     }),
+  flip: (seed: number, sender: string) =>
+    fetch("/api/flip", {
+      method: "POST",
+      body: JSON.stringify({ seed, sender }),
+    })
+      .then((res) => res.text())
+      .then((res) => bigIntJson.parse(res)),
   query: (contract: string, func: string, args: unknown[]) => {
     const url = new URL("/api/query", window.location.href);
     url.searchParams.set("contract", contract);
