@@ -10,9 +10,9 @@ registerSuperJSON();
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="container m-8 mx-auto">
+      <body className="">
         <Toaster />
-        <NavBar />
+        {/* <NavBar /> */}
         {children}
       </body>
     </html>
