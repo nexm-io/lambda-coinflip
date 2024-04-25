@@ -4,11 +4,54 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { apiWrapper } from "@/lib/api-wrapper";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import Image from "next/image";
+
+const BET_PRICE = [1, 2, 3, 4, 5, 6];
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+const Loading = () => {
+  return (
+    <>
+      <div className="flip-card">
+        <div className="flip-card-inner">
+          <div className="flip-card-front">
+            <Image
+              src="/coin.png"
+              alt="soby"
+              width={150}
+              height={150}
+              className="mx-auto"
+            />
+          </div>
+          <div className="flip-card-back">
+            <Image
+              src="/coin.png"
+              alt="soby"
+              width={150}
+              height={150}
+              className="mx-auto"
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 
 function CoinFlip() {
+  const [betAmount, setBetAmount] = useState<number>(0);
+  const [isHead, setIsHead] = useState<boolean | undefined>(undefined);
+  const [isWin, setIsWin] = useState<boolean | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const onSubmit = async (data: { betAmount: number; isHead: boolean }) => {
+    setIsLoading(true);
+    await sleep(1500);
     const block = Math.random();
 
     apiWrapper
@@ -26,6 +69,17 @@ function CoinFlip() {
           "User" // wallet
         );
 
+        console.log(
+          seed,
+          response.hostSeed,
+          response.hostSeed[response.hostSeed.length - 1]
+        );
+
+        const isWin =
+          (seed % Number(response.hostSeed[response.hostSeed.length - 1])) %
+            2 ===
+          0;
+
         apiWrapper
           .inscribe(
             `{ "p": "lam", "op": "call", "contract": "coinflip", "function": "claim", "args": [ ${seed}, ${response.hostSeed} ] }`,
@@ -33,6 +87,8 @@ function CoinFlip() {
             block + 10
           )
           .then(() => {
+            setIsLoading(false);
+            setIsWin(isWin);
             toast.success("flipped");
           });
       });
@@ -41,7 +97,128 @@ function CoinFlip() {
   const { register, handleSubmit, getValues } = useForm({
     defaultValues: { betAmount: 0, isHead: false },
   });
+  return (
+    <main>
+      <div className="grid gap-4 max-w-[600px] mx-auto">
+        <h3 className="text-3xl text-center font-bold">LAMBDA FLIP</h3>
+        {isLoading ? (
+          <>
+            <Loading />
+            <p className="text-xl text-center font-bold text-gray-500">FLIPPING</p>
+            <p className="text-xl font-bold text-center text-gray-500">
+              {`${isHead ? "HEADS" : "TAILS"} FOR ${betAmount} PUSD`}
+            </p>
+          </>
+        ) : (
+          <>
+            <img src="/coin.png" alt="" className="mx-auto w-[150px]" />
+            {isWin === undefined ? (
+              <>
+                <p className="text-gray-500 text-center text-xl font-bold">
+                  I LIKE
+                </p>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    className={cn(
+                      `text-center border-2 border-b-[4px] border-r-[4px] border-black text-black font-bold transition-all hover:bg-black hover:text-white cursor-pointer py-4`,
+                      {
+                        "bg-black text-white":
+                          isHead !== undefined && isHead === true,
+                      }
+                    )}
+                    onClick={() => setIsHead(true)}
+                  >
+                    HEADS
+                  </button>
+                  <button
+                    className={cn(
+                      `text-center border-2 border-b-[4px] border-r-[4px] border-black text-black font-bold transition-all hover:bg-black hover:text-white cursor-pointer py-4`,
+                      {
+                        "bg-black text-white":
+                          isHead !== undefined && isHead === false,
+                      }
+                    )}
+                    onClick={() => setIsHead(false)}
+                  >
+                    TAILS
+                  </button>
+                </div>
+                <p className="text-gray-500 text-center text-xl font-bold">
+                  FOR
+                </p>
+                <div className="grid grid-cols-3 gap-4">
+                  {BET_PRICE.map((z, i) => (
+                    <button
+                      key={i}
+                      className={cn(
+                        `text-center border-2 border-b-[4px] border-r-[4px] border-black text-black font-bold transition-all hover:bg-black hover:text-white cursor-pointer py-1`,
+                        {
+                          "bg-black text-white": betAmount === z,
+                        }
+                      )}
+                      onClick={() => {
+                        setBetAmount(z);
+                      }}
+                    >
+                      {z} PUSD
+                    </button>
+                  ))}
+                </div>
+                <button
+                  className={cn(
+                    `text-center border-2 border-b-[4px] border-r-[4px] border-black text-black font-bold transition-all hover:bg-black hover:text-white cursor-pointer py-4`
+                  )}
+                  onClick={() => onSubmit({ betAmount, isHead: isHead as any })}
+                >
+                  DOUBLE OR NOTHING
+                </button>
+              </>
+            ) : isWin === true ? (
+              <>
+                <p className="text-xl text-center font-bold text-gray-500">YOU WIN</p>
+                <p className="text-xl text-green-300 font-bold text-center">
+                  {betAmount} PUSD
+                </p>
+
+                <button
+                  className={cn(
+                    `text-center border-2 border-b-[4px] border-r-[4px] border-black text-black font-bold transition-all hover:bg-black hover:text-white cursor-pointer py-4`
+                  )}
+                  onClick={() => {
+                    setBetAmount(0);
+                    setIsHead(undefined);
+                    setIsWin(undefined);
+                  }}
+                >
+                  CONTINUE
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-xl text-center font-bold text-gray-500">YOU LOSE</p>
+                <p className="text-xl text-red-400 font-bold text-center">
+                  {betAmount} PUSD
+                </p>
+                <button
+                  className={cn(
+                    `text-center border-2 border-b-[4px] border-r-[4px] border-black text-black font-bold transition-all hover:bg-black hover:text-white cursor-pointer py-4`
+                  )}
+                  onClick={() => {
+                    setBetAmount(0);
+                    setIsHead(undefined);
+                    setIsWin(undefined);
+                  }}
+                >
+                  TRY AGAIN
+                </button>
+              </>
+            )}
+          </>
+        )}
+      </div>
+    </main>
+  );
   return (
     <main>
       <section className="overflow-hidden">

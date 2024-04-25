@@ -40,7 +40,7 @@ export default class CoinFlip implements Contract {
       throw new ExecutionError("game not existed");
     }
 
-    const is_win = (host_seed | seed) % 2n === 0n;
+    const is_win = (host_seed ^ seed) % 2n === 0n;
     if (is_win) {
       const pusdToken = new TokenHelper("pusd", ecosystem);
       await pusdToken.transfer(player, betAmount * 2n);
